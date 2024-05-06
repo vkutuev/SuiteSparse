@@ -196,6 +196,7 @@ jobs:
           cmake \
             -DCMAKE_PREFIX_PATH="${GITHUB_WORKSPACE}/lib/cmake" \
             -DBLA_VENDOR="Generic" \
+            ${{ matrix.arch == 'riscv64' && '-DBUILD_STATIC_LIBS=FALSE' || '' }} \
             ..
           echo "::endgroup::"
           printf "::group::\033[0;32m==>\033[0m Building example\n"
