@@ -85,11 +85,11 @@ jobs:
             mpfr-dev
             lapack-dev
             python3
-            valgrind
             util-linux-misc
             autoconf
             automake
             libtool
+            ${{ matrix.arch != 'riscv64' && 'valgrind' || '' }}
 
       - name: get CPU information (emulated)
         run: lscpu
