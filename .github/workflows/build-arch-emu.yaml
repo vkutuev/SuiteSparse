@@ -41,14 +41,22 @@ jobs:
             ccache-max: 80M
             extra-build-libs: ":GraphBLAS:LAGraph"
             extra-check-libs: ":GraphBLAS:LAGraph"
+            branch: latest-stable
           - arch: aarch64
             ccache-max: 42M
+            branch: latest-stable
           - arch: armv7
             ccache-max: 42M
+            branch: latest-stable
           - arch: ppc64le
             ccache-max: 45M
+            branch: latest-stable
           - arch: s390x
             ccache-max: 42M
+            branch: latest-stable
+          - arch: riscv64
+            ccache-max: 42M
+            branch: edge
 
     name: alpine (${{ matrix.arch }})
 
@@ -66,7 +74,7 @@ jobs:
         # shell: bash
         with:
           arch: ${{ matrix.arch }}
-          branch: edge
+          branch: ${{ matrix.branch }}
           packages: >
             build-base
             ccache
