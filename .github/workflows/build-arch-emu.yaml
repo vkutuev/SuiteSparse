@@ -106,7 +106,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           # location of the ccache of the chroot in the root file system
-          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/rootfs/alpine-${{ matrix.arch == 'riscv64' && 'edge' || 'latest'}}-${{ matrix.arch }}/home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
           # Prefer caches from the same branch. Fall back to caches from the dev branch.
           restore-keys: |
@@ -175,7 +175,7 @@ jobs:
         # This helps to retain the ccache even if the subsequent steps are failing.
         uses: actions/cache/save@v4
         with:
-          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/rootfs/alpine-${{ matrix.arch == 'riscv64' && 'edge' || 'latest' }}-${{ matrix.arch }}/home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
 
       - name: install
