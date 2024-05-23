@@ -41,22 +41,16 @@ jobs:
             ccache-max: 80M
             extra-build-libs: ":GraphBLAS:LAGraph"
             extra-check-libs: ":GraphBLAS:LAGraph"
-            branch: latest-stable
           - arch: aarch64
             ccache-max: 42M
-            branch: latest-stable
           - arch: armv7
             ccache-max: 42M
-            branch: latest-stable
           - arch: ppc64le
             ccache-max: 45M
-            branch: latest-stable
           - arch: s390x
             ccache-max: 42M
-            branch: latest-stable
           - arch: riscv64
             ccache-max: 42M
-            branch: edge
 
     name: alpine (${{ matrix.arch }})
 
@@ -74,7 +68,7 @@ jobs:
         # shell: bash
         with:
           arch: ${{ matrix.arch }}
-          branch: ${{ matrix.branch }}
+          branch: latest-stable
           packages: >
             build-base
             ccache
@@ -106,7 +100,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           # location of the ccache of the chroot in the root file system
-          path: /home/runner/rootfs/alpine-${{ matrix.arch == 'riscv64' && 'edge' || 'latest'}}-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
           # Prefer caches from the same branch. Fall back to caches from the dev branch.
           restore-keys: |
@@ -175,7 +169,7 @@ jobs:
         # This helps to retain the ccache even if the subsequent steps are failing.
         uses: actions/cache/save@v4
         with:
-          path: /home/runner/rootfs/alpine-${{ matrix.arch == 'riscv64' && 'edge' || 'latest' }}-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
 
       - name: install
