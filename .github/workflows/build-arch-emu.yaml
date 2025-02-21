@@ -66,15 +66,12 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
       FC: ${{ matrix.fc }}
-      CROSS_SYSROOT: "/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr"
 
     steps:
-
       - name: get CPU information (host)
         # shell: bash
-        run: |
-          lscpu
-         
+        run: lscpu
+
       - name: checkout repository
         uses: actions/checkout@v4
         # shell: bash
@@ -95,19 +92,9 @@ jobs:
           # ${{ matrix.arch != 'riscv64' && 'valgrind' || '' }}
           shell-name: alpine-target.sh
 
-      - name: check contents to look at set of shared libraries (but see all libraries)
-        shell: alpine-target.sh {0}
-        run: |
-          ls /usr/lib
-         
       - name: get CPU information (emulated)
         shell: alpine-target.sh {0}
         run: lscpu
-
-      - name: replace qemu
-        run: |
-          sudo apt install qemu-user=7.0.0
-          sudo rm -f /usr/local/bin/qemu-aarch64
        
       - name: install cross-toolchain
         # shell: bash
@@ -120,14 +107,12 @@ jobs:
           else 
           echo "Target architecture is x86, cross-compilation isn't required, cross-toolchain installation isn't required."
           fi
-
       - name: prepare ccache
         # create key with human readable timestamp
         # used in action/cache/restore and action/cache/save steps
         id: ccache-prepare
         run: |
           echo "key=ccache:alpine:${{ matrix.arch }}:${{ github.ref }}:$(date +"%Y-%m-%d_%H-%M-%S"):${{ github.sha }}" >> $GITHUB_OUTPUT
-
       - name: restore ccache
         # setup the GitHub cache used to maintain the ccache from one job to the next
         uses: actions/cache/restore@v4
@@ -139,7 +124,6 @@ jobs:
           restore-keys: |
             ccache:alpine:${{ matrix.arch }}:${{ github.ref }}
             ccache:alpine:${{ matrix.arch }}
-
       - name: configure ccache
         env:
           CCACHE_MAX: ${{ matrix.ccache-max }}
@@ -151,8 +135,9 @@ jobs:
           ccache -s
           which ccache
           # echo "/usr/lib/ccache" >> $GITHUB_PATH
-
       - name: build
+        env:
+          CROSS_SYSROOT: "/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr"
         run: |
           # echo "gcc --version"
           # gcc --version
