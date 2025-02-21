@@ -189,14 +189,12 @@ jobs:
       - name: check
         timeout-minutes: 60
         run: |
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib:/usr/aarch64-linux-gnu/lib"                                                                           
-          sudo cp /usr/aarch64-linux-gnu/lib/ld-linux-aarch64.so.1  /lib/ld-linux-aarch64.so.1
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
           for lib in ${CHECK_LIBS}; do
             printf "::group::   \033[0;32m==>\033[0m Checking library \033[0;32m${lib}\033[0m\n"
             cd ${GITHUB_WORKSPACE}/${lib}
-            make demos CMAKE_OPTIONS="-DSUITESPARSE_DEMOS=ON -DBUILD_TESTING=ON"
+            make demos CMAKE_OPTIONS="-DSUITESPARSE_DEMOS=ON -DBUILD_TESTING=ON -DCMAKE_SYSROOT=/usr/aarch64-linux-gnu"
             echo "::endgroup::"
           done
 
