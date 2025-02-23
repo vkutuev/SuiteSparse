@@ -175,14 +175,14 @@ jobs:
             echo "::endgroup::"
           done
 
-        - name: copy loader from cross-toolchain system to the native system  
+      - name: copy loader from cross-toolchain system to the native system  
         run: |
           sudo cp /usr/aarch64-linux-gnu/lib/ld-linux-aarch64.so.1  /lib/ld-linux-aarch64.so.1
 
-        - name: check
+      - name: check
         timeout-minutes: 60
         run: |
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/usr/aarch64-linux-gnu/lib"
+          export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
           for lib in ${CHECK_LIBS}; do
