@@ -108,6 +108,10 @@ jobs:
           echo "Target architecture is x86, cross-compilation isn't required, cross-toolchain installation isn't required."
           fi
 
+      - name: copy loader from cross-toolchain system to the native system  
+        run: |
+          sudo cp /usr/aarch64-linux-gnu/lib/ld-linux-aarch64.so.1  /lib/ld-linux-aarch64.so.1
+
       - name: prepare ccache
         # create key with human readable timestamp
         # used in action/cache/restore and action/cache/save steps
