@@ -189,7 +189,7 @@ jobs:
           for lib in ${CHECK_LIBS}; do
             printf "::group::   \033[0;32m==>\033[0m Checking library \033[0;32m${lib}\033[0m\n"
             cd ${GITHUB_WORKSPACE}/${lib}
-            make demos CMAKE_OPTIONS="-DSUITESPARSE_DEMOS=ON -DBUILD_TESTING=ON -DCMAKE_LIBRARY_PATH=/usr/aarch64-linux-gnu/lib;/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
+            make demos CMAKE_OPTIONS="-DSUITESPARSE_DEMOS=ON -DBUILD_TESTING=ON -DCMAKE_LIBRARY_PATH=/usr/aarch64-linux-gnu/lib"
             echo "::endgroup::"
           done
 
