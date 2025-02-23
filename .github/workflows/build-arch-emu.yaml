@@ -182,7 +182,7 @@ jobs:
       - name: check
         timeout-minutes: 60
         run: |
-          export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
+          export LD_LIBRARY_PATH="/usr/aarch64-linux-gnu/lib:/usr/lib/gcc-cross/aarch64-linux-gnu/9:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
           for lib in ${CHECK_LIBS}; do
