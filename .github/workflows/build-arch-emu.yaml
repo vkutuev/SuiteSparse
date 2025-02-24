@@ -99,6 +99,7 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
+          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
@@ -182,6 +183,7 @@ jobs:
       - name: check
         timeout-minutes: 60
         run: |
+          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
           export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
