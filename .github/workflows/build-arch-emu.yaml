@@ -107,8 +107,10 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc/aarch64-alpine-linux-musl/14.2.0
-          ls 
+          find . -name "libc.so.6"
+          find . -name "libc.so"
+          # cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc/aarch64-alpine-linux-musl/14.2.0
+          # ls 
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
