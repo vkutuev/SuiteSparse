@@ -107,7 +107,7 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc
+          cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc/aarch64-alpine-linux-musl
           ls 
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
