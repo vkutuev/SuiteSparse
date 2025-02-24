@@ -94,12 +94,13 @@ jobs:
 
       - name: get CPU information (emulated)
         shell: alpine-target.sh {0}
-        run: lscpu
+        run: |
+          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
+          lscpu
        
       - name: install cross-toolchain
         # shell: bash
         run: |
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
