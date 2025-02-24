@@ -99,7 +99,7 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
+          # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
@@ -151,7 +151,7 @@ jobs:
           echo "::group::Install - libtool automake autoconf - for host"
           sudo apt -y install libtool automake autoconf  
           echo "::endgroup::"
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
+          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
           IFS=:
           BUILD_LIBS="${BUILD_LIBS}${{ matrix.extra-build-libs }}"
           for lib in ${BUILD_LIBS}; do
@@ -184,7 +184,7 @@ jobs:
         timeout-minutes: 60
         run: |
           ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
+          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
           for lib in ${CHECK_LIBS}; do
