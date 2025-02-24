@@ -107,8 +107,8 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
-          ls -d */ 
+          cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc
+          ls 
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
