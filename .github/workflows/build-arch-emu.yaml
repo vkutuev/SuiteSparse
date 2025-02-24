@@ -150,14 +150,15 @@ jobs:
           echo "::group::Install - libtool automake autoconf - for host"
           sudo apt -y install libtool automake autoconf  
           echo "::endgroup::"
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
+          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
           IFS=:
           BUILD_LIBS="${BUILD_LIBS}${{ matrix.extra-build-libs }}"
           for lib in ${BUILD_LIBS}; do
             printf "   \033[0;32m==>\033[0m Building library \033[0;32m${lib}\033[0m\n"
             echo "::group::Configure $lib"
             cd ${GITHUB_WORKSPACE}/${lib}/build
-            cmake -DCMAKE_BUILD_TYPE="Release" \
+            cmake -DCMAKE_PREFIX_PATH=/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
+                  -DCMAKE_BUILD_TYPE="Release" \
                   -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}" \
                   -DCMAKE_C_COMPILER_LAUNCHER="ccache" \
                   -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
