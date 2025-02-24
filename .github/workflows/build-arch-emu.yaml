@@ -282,3 +282,4 @@ jobs:
             make all
             echo "::endgroup::"
           done
+     # run
