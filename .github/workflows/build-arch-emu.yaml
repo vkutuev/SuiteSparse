@@ -83,11 +83,19 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           packages: >
-            build-base 
+            build-base
+            ccache
+            cmake
+            gfortran
+            m4
             gmp-dev
             mpfr-dev
             lapack-dev
-            util-linux-misc 
+            python3
+            util-linux-misc
+            autoconf
+            automake
+            libtool 
           # последнее на Alpine нужно только для lscpu, поэтому пришлось вернуть; но пока непонятно, прийдётся ли устанавливать что-то аналогичное на Ubuntu
           # ${{ matrix.arch != 'riscv64' && 'valgrind' || '' }}
           shell-name: alpine-target.sh
