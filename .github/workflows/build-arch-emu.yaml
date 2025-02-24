@@ -107,14 +107,6 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          echo "output Alpine"
-          find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/ -name "libc.so.6"
-          echo "output /lib"
-          find /lib -name "libc.so.6"
-          echo "output /usr/lib"
-          find /usr/lib -name "libc.so.6"
-          # cd /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/gcc/aarch64-alpine-linux-musl/14.2.0
-          # ls 
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
@@ -123,14 +115,12 @@ jobs:
           else 
           echo "Target architecture is x86, cross-compilation isn't required, cross-toolchain installation isn't required."
           fi
-
       - name: prepare ccache
         # create key with human readable timestamp
         # used in action/cache/restore and action/cache/save steps
         id: ccache-prepare
         run: |
           echo "key=ccache:alpine:${{ matrix.arch }}:${{ github.ref }}:$(date +"%Y-%m-%d_%H-%M-%S"):${{ github.sha }}" >> $GITHUB_OUTPUT
-
       - name: restore ccache
         # setup the GitHub cache used to maintain the ccache from one job to the next
         uses: actions/cache/restore@v4
@@ -142,7 +132,6 @@ jobs:
           restore-keys: |
             ccache:alpine:${{ matrix.arch }}:${{ github.ref }}
             ccache:alpine:${{ matrix.arch }}
-
       - name: configure ccache
         env:
           CCACHE_MAX: ${{ matrix.ccache-max }}
@@ -154,7 +143,6 @@ jobs:
           ccache -s
           which ccache
           # echo "/usr/lib/ccache" >> $GITHUB_PATH
-
       - name: build
         env:
           CROSS_SYSROOT: "/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr"
@@ -166,7 +154,7 @@ jobs:
           echo "::group::Install - libtool automake autoconf - for host"
           sudo apt -y install libtool automake autoconf  
           echo "::endgroup::"
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib"
+          # export PATH=/home/runner/rootfs/alpine-latest-${{ matrix.arch }}
           IFS=:
           BUILD_LIBS="${BUILD_LIBS}${{ matrix.extra-build-libs }}"
           for lib in ${BUILD_LIBS}; do
@@ -190,16 +178,13 @@ jobs:
             cmake --build . --config Release
             echo "::endgroup::"
           done
-
       - name: copy loader from cross-toolchain system to the native system  
         run: |
           sudo cp /usr/aarch64-linux-gnu/lib/ld-linux-aarch64.so.1  /lib/ld-linux-aarch64.so.1
-
       - name: check
         timeout-minutes: 60
         run: |
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib
-          export LD_LIBRARY_PATH="/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
+          export LD_LIBRARY_PATH="/usr/lib/gcc-cross/aarch64-linux-gnu/9:/usr/aarch64-linux-gnu/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib:/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/lib"
           IFS=':'
           CHECK_LIBS="${CHECK_LIBS}${{ matrix.extra-check-libs }}"
           for lib in ${CHECK_LIBS}; do
@@ -208,7 +193,6 @@ jobs:
             make demos CMAKE_OPTIONS="-DSUITESPARSE_DEMOS=ON -DBUILD_TESTING=ON"
             echo "::endgroup::"
           done
-
       - name: ccache status
         continue-on-error: true
         run: ccache -s
@@ -231,7 +215,6 @@ jobs:
             cmake --install .
             echo "::endgroup::"
           done
-
       - name: build example using CMake
         run: |
           cd ${GITHUB_WORKSPACE}/Example/build
@@ -250,7 +233,6 @@ jobs:
           printf "\033[1;35m  C++ binary with shared libraries\033[0m\n"
           ./my_cxx_demo
           echo "::endgroup::"
-
       - name: test Config
         run: |
           IFS=:
@@ -265,7 +247,6 @@ jobs:
             cmake --build . --config Release
             echo "::endgroup::"
           done
-
       - name: build example using autotools
         run: |
           cd ${GITHUB_WORKSPACE}/Example
@@ -297,4 +278,3 @@ jobs:
             make all
             echo "::endgroup::"
           done
-     # run.
