@@ -107,7 +107,6 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share/cmake/Modules
           # find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr -name "Modules"
           # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share
           # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
@@ -150,8 +149,7 @@ jobs:
 
       - name: delete conflicting with OpenMP (lib from Alpine) dependencies
         run: |
-          sudo rm -f /usr/lib/gcc-cross/aarch64-linux-gnu/9/libgomp.so
-          sudo rm -f /usr/aarch64-linux-gnu/lib/libpthread.a 
+          sudo cp /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib/libgomp.so /usr/lib/gcc-cross/aarch64-linux-gnu/9/libgomp.so
 
       - name: build
         env:
