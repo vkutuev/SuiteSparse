@@ -107,7 +107,7 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          find / -name "Modules"
+          find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr -name "Modules"
           ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share
           ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
           if [[ ${{ matrix.arch }} != 'x86' ]]
