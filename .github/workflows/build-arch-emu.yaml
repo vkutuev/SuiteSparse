@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        # For available CPU architectures, see:
+        # For available CPU architectures,see:
         # https://github.com/marketplace/actions/setup-alpine-linux-environment
         # arch: [x86, aarch64, armv7, ppc64le, s390x, riscv64]
         arch: [ aarch64 ]
