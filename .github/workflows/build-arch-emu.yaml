@@ -146,6 +146,12 @@ jobs:
           ccache -s
           which ccache
           # echo "/usr/lib/ccache" >> $GITHUB_PATH
+
+      - name: delete conflicting with OpenMP (lib from Alpine) dependencies
+        run: |
+          rm /usr/lib/gcc-cross/aarch64-linux-gnu/9/libgomp.so
+          rm /usr/aarch64-linux-gnu/lib/libpthread.a 
+
       - name: build
         env:
           CROSS_SYSROOT: "/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr"
