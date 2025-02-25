@@ -149,8 +149,8 @@ jobs:
 
       - name: delete conflicting with OpenMP (lib from Alpine) dependencies
         run: |
-          rm /usr/lib/gcc-cross/aarch64-linux-gnu/9/libgomp.so
-          rm /usr/aarch64-linux-gnu/lib/libpthread.a 
+          sudo rm -f /usr/lib/gcc-cross/aarch64-linux-gnu/9/libgomp.so
+          sudo rm -f /usr/aarch64-linux-gnu/lib/libpthread.a 
 
       - name: build
         env:
