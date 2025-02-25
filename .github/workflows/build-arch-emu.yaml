@@ -107,9 +107,10 @@ jobs:
       - name: install cross-toolchain
         # shell: bash
         run: |
-          find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr -name "Modules"
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share
-          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
+          ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share/cmake/Modules
+          # find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr -name "Modules"
+          # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share
+          # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/lib
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
