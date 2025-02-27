@@ -109,7 +109,7 @@ jobs:
         run: |
           # find /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr -name "Modules"
           # ls /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr/share
-          sudo cat /etc/apt/apt-mirrors.txt
+          # sudo cat /etc/apt/apt-mirrors.txt
           if [[ ${{ matrix.arch }} != 'x86' ]]
           then
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
