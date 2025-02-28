@@ -151,7 +151,7 @@ jobs:
         env:
           CROSS_SYSROOT: "/home/runner/rootfs/alpine-latest-${{ matrix.arch }}/usr"
         run: |
-          # echo "gcc --version"
+          # echo "gcc --version" -
           # gcc --version
           # echo "gcc -dumpmachine"
           # gcc -dumpmachine
