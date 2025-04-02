@@ -121,7 +121,7 @@ jobs:
         # deb822-style format is a new format supported by apt itself since version 1.1:
         # https://manpages.ubuntu.com/manpages/noble/man5/sources.list.5.html
         run: |
-          if [[ ${{ matrix.arch }} != 'x86' ]]
+          if [[ ${{ matrix.arch }} != 'x86' ]]; then
           echo "::group::Configuring Multiarch for ${{ matrix.arch }}"
           sudo dpkg --add-architecture ${{ matrix.arch }}
           sudo sh -c 'echo "Types: deb \
