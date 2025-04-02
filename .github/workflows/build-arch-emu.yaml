@@ -94,6 +94,7 @@ jobs:
       - name: install some aux utilities 
         run: |
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
+          sudo apt update
           sudo apt -y install \
           cmake \
           make \
