@@ -159,11 +159,12 @@ jobs:
       - name: install cross-dependencies (using Multiarch)
         run: |
           echo "::group::Installing dependencies for target arch ${{ matrix.arch }}"
+          sudo apt update
           sudo apt -y install \
-          libblas-dev:${{ matrix.arch }} \
-          liblapack-dev:${{ matrix.arch }} \
-          libopenblas-openmp-dev:${{ matrix.arch }} \
-          libmpfr-dev:${{ matrix.arch }}
+            libblas-dev:${{ matrix.arch }} \
+            liblapack-dev:${{ matrix.arch }} \
+            libopenblas-openmp-dev:${{ matrix.arch }} \
+            libmpfr-dev:${{ matrix.arch }}
           echo "::endgroup::"
 
       - name: prepare ccache
