@@ -32,7 +32,7 @@ endif ( )
 
 # Try to get information from pkg-config file first.
 find_package ( PkgConfig )
-if ( PKG_CONFIG_FOUND )
+if ( PKG_CONFIG_FOUND AND NOT DEFINED CMAKE_SPEX_CROSS )
     set ( GMP_PC_OPTIONS "" )
     if ( GMP_FIND_VERSION )
         set ( GMP_PC_OPTIONS "gmp>=${GMP_FIND_VERSION}" )
@@ -60,7 +60,6 @@ endif ( )
 
 if ( NOT GMP_FOUND )
     # Manual search if pkg-config couldn't be used.
-
     # include files for gmp
     find_path ( GMP_INCLUDE_DIR
         NAMES gmp.h

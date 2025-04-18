@@ -26,13 +26,14 @@
 #-------------------------------------------------------------------------------
 
 if ( DEFINED ENV{CMAKE_PREFIX_PATH} )
-    # import CMAKE_PREFIX_PATH, typically created by spack
-    list ( PREPEND CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH} )
+        # import CMAKE_PREFIX_PATH, typically created by spack
+        list ( PREPEND CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH} )
 endif ( )
 
 # Try to get information from pkg-config file first.
 find_package ( PkgConfig )
-if ( PKG_CONFIG_FOUND )
+if ( PKG_CONFIG_FOUND AND NOT DEFINED CMAKE_SPEX_CROSS )
+    message(STATUS "mpfr, pkg-config search")
     set ( MPFR_PC_OPTIONS "" )
     if ( MPFR_FIND_VERSION )
         set ( MPFR_PC_OPTIONS "mpfr>=${MPFR_FIND_VERSION}" )
