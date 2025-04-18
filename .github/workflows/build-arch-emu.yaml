@@ -1,10 +1,10 @@
 name: arch-emu
 on:
   workflow_dispatch:
-  push:
-    branches-ignore:
-      - '**/dev2'
-      - '**/*dev2'
+   # push:
+   # branches-ignore:
+   #   - '**/dev2'
+   #   - '**/*dev2'
   pull_request:
 
 concurrency: ci-arch-emu-${{ github.ref }}
@@ -20,102 +20,181 @@ env:
 
 jobs:
 
-  alpine:
-    # Run armv7 on aarch64 runners
-    runs-on: ${{ matrix.arch == 'armv7' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+  cross-compile:
+    runs-on: ubuntu-latest
 
     defaults:
       run:
-        # Use emulated shell as default
-        shell: alpine.sh {0}
+        # Use bash shell as default
+        shell: bash
 
     strategy:
       # Allow other runners in the matrix to continue if some fail
       fail-fast: false
 
       matrix:
-        # For available CPU architectures, see:
-        # https://github.com/marketplace/actions/setup-alpine-linux-environment
-        arch: [x86, armv7, ppc64le, s390x, riscv64, loongarch64]
+        arch: [amd64, arm64, armhf, ppc64el, s390x, riscv64]
         include:
-          - arch: x86
+          - arch: amd64
+            cc: gcc
             ccache-max: 64M
             extra-build-libs: ":GraphBLAS:LAGraph"
             extra-check-libs: ":GraphBLAS:LAGraph"
-          - arch: armv7
-            ccache-max: 60M
-            extra-build-libs: ":GraphBLAS:LAGraph"
-            extra-check-libs: ":GraphBLAS:LAGraph"
-          - arch: ppc64le
+          - arch: arm64
+            target_system: aarch64-linux-gnu
+            cross-toolchain: g++-9-aarch64-linux-gnu
+            fortran-cross-toolchain: gfortran-10-aarch64-linux-gnu
+            cc: "aarch64-linux-gnu-gcc-9"
+            cxx: "aarch64-linux-gnu-g++-9"
+            fc: "aarch64-linux-gnu-gfortran-10"
+            ld: ld-linux-aarch64.so.1
+            ccache-max: 28M
+          - arch: armhf
+            target_system: arm-linux-gnueabihf
+            cross-toolchain: g++-9-arm-linux-gnueabihf
+            fortran-cross-toolchain: gfortran-10-arm-linux-gnueabihf
+            cc: "arm-linux-gnueabihf-gcc-9"
+            cxx: "arm-linux-gnueabihf-g++-9"
+            fc: "arm-linux-gnueabihf-gfortran-10"
+            ld: ld-linux.so.3
+            ccache-max: 25M
+          - arch: ppc64el
+            target_system: powerpc64le-linux-gnu
+            cross-toolchain: g++-9-powerpc64le-linux-gnu 
+            fortran-cross-toolchain: gfortran-10-powerpc64le-linux-gnu
+            cc: "powerpc64le-linux-gnu-gcc-9"
+            cxx: "powerpc64le-linux-gnu-g++-9"
+            fc: "powerpc64le-linux-gnu-gfortran-10"
+            ld: ld64.so.2
             ccache-max: 28M
           - arch: s390x
+            target_system: s390x-linux-gnu
+            cross-toolchain: g++-9-s390x-linux-gnu 
+            fortran-cross-toolchain: gfortran-10-s390x-linux-gnu
+            cc: "s390x-linux-gnu-gcc-9"
+            cxx: "s390x-linux-gnu-g++-9"
+            fc: "s390x-linux-gnu-gfortran-10"
+            ld: ld64.so.1
             ccache-max: 28M
           - arch: riscv64
+            target_system: riscv64-linux-gnu
+            cross-toolchain: g++-9-riscv64-linux-gnu 
+            fortran-cross-toolchain: gfortran-10-riscv64-linux-gnu
+            cc: "riscv64-linux-gnu-gcc-9"
+            cxx: "riscv64-linux-gnu-g++-9"
+            fc: "riscv64-linux-gnu-gfortran-10"
+            ld: ld-linux-riscv64-lp64d.so.1
             ccache-max: 28M
-          - arch: loongarch64
-            ccache-max: 30M
 
-    name: alpine (${{ matrix.arch }})
+    name: cross-compile (${{ matrix.arch }})
+
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      FC: ${{ matrix.fc }}
+      LD_LIBRARY_PATH: "/usr/${{ matrix.target_system }}/lib:/usr/lib/${{ matrix.target_system }}"
+      LIBRARY_PATH: "/usr/${{ matrix.target_system }}/lib"
 
     steps:
-      - name: get CPU information (host)
-        shell: bash
+      - name: get CPU information
         run: lscpu
+
+      - name: install some aux utilities 
+        run: |
+          echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
+          sudo apt -y install \
+          cmake \
+          make \
+          ccache \
+          automake \
+          libtool \
+          qemu-user-binfmt        
+          echo "::endgroup::"
 
       - name: checkout repository
         uses: actions/checkout@v4
-        # shell: bash
 
-      - name: install dependencies
-        uses: jirutka/setup-alpine@v1
-        # shell: bash
-        with:
-          arch: ${{ matrix.arch }}
-          apk-tools-url: ${{ matrix.arch == 'armv7'
-              && 'https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.14.7/aarch64/apk.static#!sha256!27a975638ddc95a411c9f17c63383e335da9edf6bb7de2281d950c291a11f878'
-              || 'https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.14.7/x86_64/apk.static#!sha256!bdd044e0fd6cc388c5e571e1093efa5f35f7767cc5aa338b0a2576a429009a62' }}
-          packages: >
-            build-base
-            ccache
-            cmake
-            gfortran
-            m4
-            gmp-dev
-            mpfr-dev
-            lapack-dev
-            python3
-            util-linux-misc
-            autoconf
-            automake
-            libtool
-          # ${{ matrix.arch != 'riscv64' && 'valgrind' || '' }}
+      - name: install cross-toolchain
+        run: |
+          if [[ ${{ matrix.arch }} != 'amd64' ]]
+          then
+          echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
+          sudo apt -y install ${{ matrix.cross-toolchain }} ${{ matrix.fortran-cross-toolchain }}       
+          echo "::endgroup::"
+          else 
+          echo "Target architecture is amd64, cross-compilation isn't required, cross-toolchain installation isn't required."
+          fi
 
-      - name: disable QEMU emulation
-        if: matrix.arch == 'armv7'
-        shell: bash
-        run: sudo update-binfmts --disable qemu-arm
+      - name: configure Multiarch
+        # deb822-style format is a new format supported by apt itself since version 1.1:
+        # https://manpages.ubuntu.com/manpages/noble/man5/sources.list.5.html
+        run: |
+          if [[ ${{ matrix.arch }} != 'amd64' ]]
+          then
+          sudo dpkg --add-architecture ${{ matrix.arch }}
+          sudo bash -c 'cat - >/etc/apt/sources.list.d/ubuntu.sources' <<EOF
+          Types: deb
+          URIs: http://ru.archive.ubuntu.com/ubuntu/
+          Suites: noble noble-updates noble-backports
+          Components: main restricted universe multiverse
+          Architectures: amd64
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          
+          Types: deb
+          URIs: http://security.ubuntu.com/ubuntu/
+          Suites: noble-security
+          Components: main restricted universe multiverse
+          Architectures: amd64
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          
+          Types: deb
+          URIs: http://ru.ports.ubuntu.com/ubuntu-ports/
+          Suites: noble noble-updates noble-backports
+          Components: main restricted universe multiverse
+          Architectures: ${{ matrix.arch }}
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          
+          Types: deb
+          URIs: http://security.ports.ubuntu.com/ubuntu-ports/
+          Suites: noble-security
+          Components: main restricted universe multiverse
+          Architectures: ${{ matrix.arch }}
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          
+          EOF
+          echo "::group::Updating package indexes with new indexes for ${{ matrix.arch }} packages"
+          sudo apt update 
+          echo "::endgroup::" 
+          else
+          echo "Target architecture is amd64, Multiarch configuration isn't required."
+          fi
 
-      - name: get CPU information (emulated)
-        run: lscpu
+      - name: install cross-dependencies (using Multiarch)
+        run: |
+          echo "::group::Installing dependencies for target arch ${{ matrix.arch }}"
+          sudo apt -y install \
+          libopenblas-openmp-dev:${{ matrix.arch }} \
+          libmpfr-dev:${{ matrix.arch }}
+          echo "::endgroup::"
 
       - name: prepare ccache
         # create key with human readable timestamp
         # used in action/cache/restore and action/cache/save steps
         id: ccache-prepare
         run: |
-          echo "key=ccache:alpine:${{ matrix.arch }}:${{ github.ref }}:$(date +"%Y-%m-%d_%H-%M-%S"):${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "key=ccache:cross-compile:${{ matrix.arch }}:${{ github.ref }}:$(date +"%Y-%m-%d_%H-%M-%S"):${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: restore ccache
         # setup the GitHub cache used to maintain the ccache from one job to the next
         uses: actions/cache/restore@v4
         with:
           # location of the ccache of the chroot in the root file system
-          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
           # Prefer caches from the same branch. Fall back to caches from the dev branch.
           restore-keys: |
-            ccache:alpine:${{ matrix.arch }}:${{ github.ref }}
-            ccache:alpine:${{ matrix.arch }}
+            ccache:cross-compile:${{ matrix.arch }}:${{ github.ref }}
+            ccache:cross-compile:${{ matrix.arch }}
 
       - name: configure ccache
         env:
@@ -130,10 +209,10 @@ jobs:
 
       - name: build
         run: |
-          echo "gcc --version"
-          gcc --version
-          echo "gcc -dumpmachine"
-          gcc -dumpmachine
+          echo "${{ matrix.cc }} --version"
+          ${{ matrix.cc }} --version
+          echo "${{ matrix.cc }} -dumpmachine"
+          ${{ matrix.cc }} -dumpmachine
           IFS=:
           BUILD_LIBS="${BUILD_LIBS}${{ matrix.extra-build-libs }}"
           for lib in ${BUILD_LIBS}; do
@@ -179,7 +258,7 @@ jobs:
         # This helps to retain the ccache even if the subsequent steps are failing.
         uses: actions/cache/save@v4
         with:
-          path: /home/runner/rootfs/alpine-latest-${{ matrix.arch }}/home/runner/.ccache
+          path: /home/runner/.ccache
           key: ${{ steps.ccache-prepare.outputs.key }}
 
       - name: install
@@ -195,6 +274,8 @@ jobs:
 
       - name: build example using CMake
         run: |
+          #function fmax (from libm) needs linker flags
+          export LDFLAGS="-Wl,--copy-dt-needed-entries"
           cd ${GITHUB_WORKSPACE}/Example/build
           printf "::group::\033[0;32m==>\033[0m Configuring example\n"
           cmake \
@@ -242,9 +323,9 @@ jobs:
           echo "::endgroup::"
           printf "::group::\033[0;32m==>\033[0m Executing example\n"
           printf "\033[1;35m  C binary\033[0m\n"
-          LD_LIBRARY_PATH=${GITHUB_WORKSPACE}/lib ./my_demo
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/lib" ./my_demo
           printf "\033[1;35m  C++ binary\033[0m\n"
-          LD_LIBRARY_PATH=${GITHUB_WORKSPACE}/lib ./my_cxx_demo
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GITHUB_WORKSPACE}/lib" ./my_cxx_demo
           echo "::endgroup::"
           IFS=:
           INSTALLED_LIBS="${INSTALLED_LIBS}${{ matrix.extra-build-libs }}"
