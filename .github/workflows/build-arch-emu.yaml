@@ -92,7 +92,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
       FC: ${{ matrix.fc }}
-      LD_LIBRARY_PATH: "/usr/${{ matrix.target_system }}/lib:/usr/lib/${{ matrix.target_system }}"
+      LD_LIBRARY_PATH: "/usr/${{ matrix.target_system }}/lib"
       LIBRARY_PATH: "/usr/${{ matrix.target_system }}/lib"
 
     steps:
