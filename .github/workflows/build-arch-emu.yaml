@@ -47,7 +47,6 @@ jobs:
             cc: "aarch64-linux-gnu-gcc-9"
             cxx: "aarch64-linux-gnu-g++-9"
             fc: "aarch64-linux-gnu-gfortran-10"
-            ld: ld-linux-aarch64.so.1
             ccache-max: 28M
           - arch: armhf
             target_system: arm-linux-gnueabihf
@@ -56,7 +55,6 @@ jobs:
             cc: "arm-linux-gnueabihf-gcc-9"
             cxx: "arm-linux-gnueabihf-g++-9"
             fc: "arm-linux-gnueabihf-gfortran-10"
-            ld: ld-linux.so.3
             ccache-max: 25M
           - arch: ppc64el
             target_system: powerpc64le-linux-gnu
@@ -65,7 +63,6 @@ jobs:
             cc: "powerpc64le-linux-gnu-gcc-9"
             cxx: "powerpc64le-linux-gnu-g++-9"
             fc: "powerpc64le-linux-gnu-gfortran-10"
-            ld: ld64.so.2
             ccache-max: 28M
           - arch: s390x
             target_system: s390x-linux-gnu
@@ -74,7 +71,6 @@ jobs:
             cc: "s390x-linux-gnu-gcc-9"
             cxx: "s390x-linux-gnu-g++-9"
             fc: "s390x-linux-gnu-gfortran-10"
-            ld: ld64.so.1
             ccache-max: 28M
           - arch: riscv64
             target_system: riscv64-linux-gnu
@@ -83,7 +79,6 @@ jobs:
             cc: "riscv64-linux-gnu-gcc-9"
             cxx: "riscv64-linux-gnu-g++-9"
             fc: "riscv64-linux-gnu-gfortran-10"
-            ld: ld-linux-riscv64-lp64d.so.1
             ccache-max: 28M
 
     name: cross-compile (${{ matrix.arch }})
