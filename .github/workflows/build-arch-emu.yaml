@@ -200,6 +200,8 @@ jobs:
           # echo "/usr/lib/ccache" >> $GITHUB_PATH
 
       - name: build
+        env:
+          PKG_CONFIG_SYSROOT_DIR: /usr/lib/${{ matrix.target_system }}
         run: |
           echo "${{ matrix.cc }} --version"
           ${{ matrix.cc }} --version
