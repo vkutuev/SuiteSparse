@@ -126,7 +126,7 @@ jobs:
           sudo dpkg --add-architecture ${{ matrix.arch }}
           sudo bash -c 'cat - >/etc/apt/sources.list.d/ubuntu.sources' <<EOF
           Types: deb
-          URIs: http://ru.archive.ubuntu.com/ubuntu/
+          URIs: http://archive.ubuntu.com/ubuntu/
           Suites: noble noble-updates noble-backports
           Components: main restricted universe multiverse
           Architectures: amd64
@@ -140,7 +140,7 @@ jobs:
           Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
           
           Types: deb
-          URIs: http://ru.ports.ubuntu.com/ubuntu-ports/
+          URIs: http://ports.ubuntu.com/ubuntu-ports/
           Suites: noble noble-updates noble-backports
           Components: main restricted universe multiverse
           Architectures: ${{ matrix.arch }}
