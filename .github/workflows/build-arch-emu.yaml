@@ -201,7 +201,7 @@ jobs:
 
       - name: build
         env:
-          PKG_CONFIG_SYSROOT_DIR: /usr/lib/${{ matrix.target_system }}
+          PKG_CONFIG_LIBDIR: /usr/lib/${{ matrix.target_system }}/pkgconfig
         run: |
           echo "${{ matrix.cc }} --version"
           ${{ matrix.cc }} --version
@@ -267,6 +267,8 @@ jobs:
           done
 
       - name: build example using CMake
+        env:
+          PKG_CONFIG_LIBDIR: /usr/lib/${{ matrix.target_system }}/pkgconfig
         run: |
           #function fmax (from libm) needs linker flags
           export LDFLAGS="-Wl,--copy-dt-needed-entries"
