@@ -33,39 +33,31 @@ jobs:
       fail-fast: false
 
       matrix:
-        arch: [armhf, ppc64el, s390x, riscv64]
+        arch: [ppc64el, s390x, riscv64]
         include:
-          - arch: armhf
-            target_system: arm-linux-gnueabihf
-            cross-toolchain: g++-9-arm-linux-gnueabihf
-            fortran-cross-toolchain: gfortran-10-arm-linux-gnueabihf
-            cc: "arm-linux-gnueabihf-gcc-9"
-            cxx: "arm-linux-gnueabihf-g++-9"
-            fc: "arm-linux-gnueabihf-gfortran-10"
-            ccache-max: 64M
           - arch: ppc64el
             target_system: powerpc64le-linux-gnu
-            cross-toolchain: g++-9-powerpc64le-linux-gnu 
-            fortran-cross-toolchain: gfortran-10-powerpc64le-linux-gnu
-            cc: "powerpc64le-linux-gnu-gcc-9"
-            cxx: "powerpc64le-linux-gnu-g++-9"
-            fc: "powerpc64le-linux-gnu-gfortran-10"
+            cross-toolchain: g++-14-powerpc64le-linux-gnu
+            fortran-cross-toolchain: gfortran-14-powerpc64le-linux-gnu
+            cc: "powerpc64le-linux-gnu-gcc-14"
+            cxx: "powerpc64le-linux-gnu-g++-14"
+            fc: "powerpc64le-linux-gnu-gfortran-14"
             ccache-max: 64M
           - arch: s390x
             target_system: s390x-linux-gnu
-            cross-toolchain: g++-9-s390x-linux-gnu 
-            fortran-cross-toolchain: gfortran-10-s390x-linux-gnu
-            cc: "s390x-linux-gnu-gcc-9"
-            cxx: "s390x-linux-gnu-g++-9"
-            fc: "s390x-linux-gnu-gfortran-10"
+            cross-toolchain: g++-14-s390x-linux-gnu
+            fortran-cross-toolchain: gfortran-14-s390x-linux-gnu
+            cc: "s390x-linux-gnu-gcc-14"
+            cxx: "s390x-linux-gnu-g++-14"
+            fc: "s390x-linux-gnu-gfortran-14"
             ccache-max: 64M
           - arch: riscv64
             target_system: riscv64-linux-gnu
-            cross-toolchain: g++-9-riscv64-linux-gnu 
-            fortran-cross-toolchain: gfortran-10-riscv64-linux-gnu
-            cc: "riscv64-linux-gnu-gcc-9"
-            cxx: "riscv64-linux-gnu-g++-9"
-            fc: "riscv64-linux-gnu-gfortran-10"
+            cross-toolchain: g++-14-riscv64-linux-gnu
+            fortran-cross-toolchain: gfortran-14-riscv64-linux-gnu
+            cc: "riscv64-linux-gnu-gcc-14"
+            cxx: "riscv64-linux-gnu-g++-14"
+            fc: "riscv64-linux-gnu-gfortran-14"
             ccache-max: 64M
 
     name: cross-compile (${{ matrix.arch }})
@@ -84,6 +76,7 @@ jobs:
       - name: install some aux utilities
         run: |
           echo "::group::Install cross-toolchain for ${{ matrix.arch }}"
+          sudo apt update
           sudo apt -y install \
             cmake \
             make \
